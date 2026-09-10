@@ -81,7 +81,7 @@ page_header('#' . $id . ' ' . $bug['title']);
 <div class="detail">
   <div class="panel">
     <div class="head">
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><span class="id num">#<?= fa_digits($id) ?></span><?= badge($bug['status']) ?></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><span class="id num">#<?= fa_digits($id) ?></span><?= badge($bug['status']) ?><?= prio_badge($bug) ?></div>
       <h1><?= h($bug['title']) ?></h1>
       <div class="meta"><span><b>ثبت:</b> <?= h($bug['reporter']) ?> (ساپورت)</span><span class="num"><?= jdate((int)$bug['created']) ?></span></div>
     </div>

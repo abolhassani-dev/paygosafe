@@ -44,16 +44,17 @@ page_header('لیست باگ‌ها');
     <span class="count num"><?= fa_digits(count($rows)) ?> مورد</span>
   </form>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>#</th><th>موضوع</th><th>وضعیت</th><th>ثبت‌کننده</th><th>آخرین تغییر</th></tr></thead>
+    <thead><tr><th>#</th><th>موضوع</th><th>وضعیت</th><th>اولویت</th><th>ثبت‌کننده</th><th>آخرین تغییر</th></tr></thead>
     <tbody>
     <?php if (!$rows): ?>
-      <tr><td colspan="5" class="empty">موردی نیست.</td></tr>
+      <tr><td colspan="6" class="empty">موردی نیست.</td></tr>
     <?php endif; ?>
     <?php foreach ($rows as $b): ?>
       <tr>
         <td class="id num"><?= fa_digits($b['id']) ?></td>
         <td class="title"><a href="bug.php?id=<?= (int)$b['id'] ?>"><?= h($b['title']) ?></a><?php if (!empty($b['files'])): ?><span class="sub">📎 <?= fa_digits(count($b['files'])) ?></span><?php endif; ?></td>
         <td><?= badge($b['status']) ?></td>
+        <td><?= prio_badge($b) ?></td>
         <td style="color:var(--ink2)"><?= h($b['reporter']) ?></td>
         <td class="num" style="color:var(--muted);font-size:12.5px"><?= jdate((int)$b['updated']) ?></td>
       </tr>

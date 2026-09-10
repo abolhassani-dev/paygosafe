@@ -19,6 +19,12 @@ const STATUSES = [
     'rejected' => 'رد شد',
 ];
 const OPEN_STATUSES = ['new', 'review', 'info', 'test', 'reopen'];
+const PRIORITIES = [
+    'low'      => 'کم',
+    'medium'   => 'متوسط',
+    'high'     => 'بالا',
+    'critical' => 'بحرانی',
+];
 const DEV_STATUSES  = ['review', 'info', 'test', 'closed', 'rejected'];
 
 // ---------------------------------------------------------------- session
@@ -198,6 +204,18 @@ function badge(string $status): string
     return '<span class="badge s-' . h($status) . '">' . h($l) . '</span>';
 }
 
+function priority_of(array $bug): string
+{
+    $p = $bug['priority'] ?? 'medium';
+    return isset(PRIORITIES[$p]) ? $p : 'medium';
+}
+
+function prio_badge(array $bug): string
+{
+    $p = priority_of($bug);
+    return '<span class="prio p-' . h($p) . '"><i></i>' . h(PRIORITIES[$p]) . '</span>';
+}
+
 // ---------------------------------------------------------------- storage (JSON files)
 function bug_file(int $id): string
 {
@@ -361,7 +379,9 @@ function who_label(array $bug, string $role, ?string $name): string
 /** اعلان باگ جدید: متن کامل + عکس‌ها. message_id را داخل باگ ذخیره می‌کند. */
 function notify_new(array &$bug): void
 {
-    $text = '🐞 <b>باگ #' . fa_digits($bug['id']) . ' · ' . tg_esc($bug['title']) . "</b>\n\n"
+    $pIco = ['low' => '⚪', 'medium' => '🔵', 'high' => '🟠', 'critical' => '🔴'][priority_of($bug)];
+    $text = '🐞 <b>باگ #' . fa_digits($bug['id']) . ' · ' . tg_esc($bug['title']) . "</b>\n"
+        . $pIco . ' اولویت: ' . PRIORITIES[priority_of($bug)] . "\n\n"
         . tg_esc($bug['desc']) . "\n\n"
         . '👤 ' . tg_esc($bug['reporter']) . " (ساپورت)\n"
         . bug_link($bug);

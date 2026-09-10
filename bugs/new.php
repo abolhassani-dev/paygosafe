@@ -4,13 +4,14 @@ require __DIR__ . '/lib.php';
 require_role('support');
 
 $err = null;
-$old = ['name' => '', 'title' => '', 'desc' => ''];
+$old = ['name' => '', 'title' => '', 'desc' => '', 'priority' => 'medium'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
     $old['name'] = trim((string)($_POST['name'] ?? ''));
     $old['title'] = trim((string)($_POST['title'] ?? ''));
     $old['desc'] = trim(str_replace("\r", '', (string)($_POST['desc'] ?? '')));
+    $old['priority'] = isset(PRIORITIES[$_POST['priority'] ?? '']) ? (string)$_POST['priority'] : 'medium';
     if ($old['name'] === '' || $old['title'] === '' || $old['desc'] === '') {
         $err = 'نام، موضوع و شرح الزامی است.';
     } elseif (mb_strlen($old['name']) > 60 || mb_strlen($old['title']) > 200 || mb_strlen($old['desc']) > 3500) {
@@ -27,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'title' => $old['title'],
                 'desc' => $old['desc'],
                 'reporter' => $old['name'],
+                'priority' => $old['priority'],
                 'status' => 'new',
                 'files' => $files,
                 'created' => time(),
@@ -52,6 +54,9 @@ page_header('باگ جدید');
     <?= csrf_field() ?>
     <div class="field"><label>نام شما <b>*</b></label><input name="name" value="<?= h($old['name']) ?>" placeholder="نام ثبت‌کننده" required maxlength="60"></div>
     <div class="field"><label>موضوع <b>*</b></label><input name="title" value="<?= h($old['title']) ?>" placeholder="عنوان کوتاه مشکل" required maxlength="200"></div>
+    <div class="field"><label>اولویت <b>*</b></label><select name="priority">
+      <?php foreach (PRIORITIES as $k => $l): ?><option value="<?= $k ?>" <?= $old['priority'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
+    </select></div>
     <div class="field"><label>شرح <b>*</b></label><textarea name="desc" style="min-height:160px" placeholder="شرح کامل مشکل با ریز جزئیات و بخش مورد نظر" required><?= h($old['desc']) ?></textarea></div>
     <div class="field"><label>اسکرین‌شات</label><input type="file" name="shots[]" accept="image/*" multiple><span class="hint">اختیاری · تا <?= fa_digits($CFG['max_files']) ?> تصویر، هر کدام حداکثر <?= fa_digits($CFG['max_file_mb']) ?> مگابایت</span></div>
     <div class="actions"><button class="btn primary">ثبت</button><a class="btn" href="index.php">انصراف</a></div>

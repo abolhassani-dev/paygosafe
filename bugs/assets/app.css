@@ -76,6 +76,9 @@ td.title .sub{display:block;font-size:12px;color:var(--muted)}
 .badge.s-reopen{--fgc:var(--s-reopen);--bgc:var(--s-reopen-bg)}
 .badge.s-closed{--fgc:var(--s-closed);--bgc:var(--s-closed-bg)}
 .badge.s-rejected{--fgc:var(--s-rejected);--bgc:var(--s-rejected-bg)}
+.prio{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;white-space:nowrap;color:var(--ink2)}
+.prio i{width:10px;height:10px;border-radius:3px;background:var(--pc);display:inline-block}
+.prio.p-low{--pc:#7C8794}.prio.p-medium{--pc:#2563EB}.prio.p-high{--pc:#D97706}.prio.p-critical{--pc:#B91C1C}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 /* detail */
 .detail{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
