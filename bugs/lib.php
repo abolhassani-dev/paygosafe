@@ -26,6 +26,7 @@ function is_https(): bool
 {
     return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'
+        || strpos($_SERVER['HTTP_CF_VISITOR'] ?? '', '"https"') !== false
         || ($_SERVER['SERVER_PORT'] ?? '') == 443;
 }
 
@@ -102,6 +103,9 @@ function csrf_check(): void
 // ---------------------------------------------------------------- login throttle
 function client_ip(): string
 {
+    // پشت Cloudflare آی‌پی واقعی کاربر در این هدر است؛ وگرنه همه‌ی کاربران یک آی‌پی دیده می‌شوند
+    $cf = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '';
+    if ($cf !== '' && filter_var($cf, FILTER_VALIDATE_IP)) return $cf;
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
