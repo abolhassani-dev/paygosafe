@@ -163,7 +163,7 @@ function h(?string $s): string
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-function redirect(string $to): never
+function redirect(string $to): void
 {
     header('Location: ' . $to);
     exit;

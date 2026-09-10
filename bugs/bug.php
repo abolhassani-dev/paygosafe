@@ -94,7 +94,7 @@ page_header('#' . $id . ' ' . $bug['title']);
     <div class="timeline"><h3>گفتگو</h3>
     <?php foreach ($bug['log'] as $e):
         $isDev = ($e['role'] ?? '') === 'dev';
-        $what = match ($e['kind']) { 'created' => 'ثبت کرد', 'status' => badge($e['to']), default => 'یادداشت' };
+        $what = $e['kind'] === 'created' ? 'ثبت کرد' : ($e['kind'] === 'status' ? badge($e['to']) : 'یادداشت');
     ?>
       <div class="ev"><div class="ic <?= $isDev ? 'dev' : 'sup' ?>"><?= $isDev ? 'D' : 'S' ?></div><div class="body">
         <div class="top"><b><?= h($e['who'] ?? '') ?></b><?= $isDev ? '' : '<span class="rtag">ساپورت</span>' ?><span><?= $what ?></span><?= (isset($e['tg']) && $e['tg'] === false) ? '<span class="warn">اعلان ارسال نشد</span>' : '' ?><time class="num"><?= jdate((int)$e['ts']) ?></time></div>
