@@ -1,5 +1,6 @@
 # داده‌های واقعی میز باگ هرگز کامیت نمی‌شوند
 bugs/data/bugs/*.json
+bugs/data/bugs/*.lock
 bugs/data/uploads/*
 !bugs/data/uploads/.gitkeep
 bugs/data/seq.txt

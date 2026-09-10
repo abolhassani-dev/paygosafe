@@ -5,9 +5,12 @@ date_default_timezone_set('Asia/Tehran');
 require_once __DIR__ . '/jalali.php';
 
 $CFG = require __DIR__ . '/config.php';
-define('DATA_DIR', __DIR__ . '/data');
+define('DATA_DIR', !empty($CFG['data_dir']) ? rtrim($CFG['data_dir'], '/\\') : __DIR__ . '/data');
 define('BUGS_DIR', DATA_DIR . '/bugs');
 define('UPLOAD_DIR', DATA_DIR . '/uploads');
+foreach ([BUGS_DIR, UPLOAD_DIR] as $d) {
+    if (!is_dir($d)) @mkdir($d, 0755, true);
+}
 
 const STATUSES = [
     'new'      => 'جدید',
@@ -89,6 +92,26 @@ function require_role(string $r): void
     if (role() !== $r) {
         http_response_code(403);
         exit('دسترسی ندارید.');
+    }
+}
+
+/** آیا راه‌اندازی کامل شده (هر دو رمز تنظیم شده)؟ */
+function setup_complete(): bool
+{
+    global $CFG;
+    foreach ($CFG['users'] as $u) {
+        if (empty($u['password_hash'])) return false;
+    }
+    return true;
+}
+
+/** صفحات راه‌اندازی: قبل از تکمیل نصب برای همه باز، بعد از آن فقط برای دولوپر */
+function require_setup_access(): void
+{
+    start_session();
+    if (setup_complete() && role() !== 'dev') {
+        http_response_code(403);
+        exit('این صفحه فقط برای دولوپر در دسترس است.');
     }
 }
 
@@ -268,6 +291,14 @@ function next_id(): int
     return $next;
 }
 
+/** قفل انحصاری روی یک باگ برای ویرایش هم‌زمان. تا پایان اسکریپت نگه داشته می‌شود. */
+function bug_lock(int $id)
+{
+    $fp = fopen(BUGS_DIR . '/' . $id . '.lock', 'c');
+    if ($fp) flock($fp, LOCK_EX);
+    return $fp;
+}
+
 function add_event(array &$bug, array $ev): void
 {
     $ev['ts'] = time();
@@ -424,6 +455,10 @@ function page_header(string $title): void
     global $CFG;
     $app = $CFG['app_name'];
     $r = role();
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+    header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; form-action 'self'; frame-ancestors 'none'");
     echo '<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<title>' . h($title) . ' · ' . h($app) . '</title>';
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap">';

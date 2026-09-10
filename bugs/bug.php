@@ -17,6 +17,8 @@ $err = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
+    $lock = bug_lock($id);
+    $bug = load_bug($id) ?: $bug; // نسخه‌ی تازه، زیر قفل
     $note = trim(str_replace("\r", '', (string)($_POST['note'] ?? '')));
     $action = (string)($_POST['action'] ?? '');
     if (mb_strlen($note) > 3500) {

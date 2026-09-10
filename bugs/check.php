@@ -33,7 +33,19 @@ $libOk = null; $libErr = '';
 if (is_file($dir . '/lib.php')) {
     try { require_once $dir . '/lib.php'; $libOk = function_exists('start_session'); } catch (Throwable $e) { $libOk = false; $libErr = $e->getMessage(); }
     $rows[] = ['lib.php روی این PHP اجرا می‌شود', (bool)$libOk, $libErr];
+    if ($libOk) {
+        // بعد از تکمیل نصب، این صفحه فقط برای دولوپر باز است (اطلاعات سرور را نشان می‌دهد)
+        require_setup_access();
+        $docroot = rtrim(str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ''), '/');
+        $dataReal = str_replace('\\', '/', realpath(DATA_DIR) ?: DATA_DIR);
+        $outside = $docroot !== '' && strpos($dataReal, $docroot . '/') !== 0;
+        $rows[] = ['پوشه‌ی داده خارج از public_html (توصیه‌شده)', $outside, $dataReal];
+        $rows[] = ['base_url در config تنظیم شده (توصیه‌شده)', !empty($c['base_url']), ''];
+    }
 }
+$server = $_SERVER['SERVER_SOFTWARE'] ?? '';
+$apacheLike = stripos($server, 'apache') !== false || stripos($server, 'litespeed') !== false;
+$rows[] = ['وب‌سرور .htaccess را می‌خواند (Apache/LiteSpeed)', $apacheLike, $server ?: 'نامشخص'];
 ?>
 <!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>بررسی نصب</title>
 <style>body{font-family:Tahoma,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.8}table{border-collapse:collapse;width:100%}td{padding:8px 10px;border-bottom:1px solid #ddd}td:first-child{width:30px}code{direction:ltr;display:inline-block;background:#f3f3f3;padding:1px 6px}</style></head><body>
