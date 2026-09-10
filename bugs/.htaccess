@@ -1,0 +1,8 @@
+Options -Indexes
+<IfModule mod_php.c>
+  php_value upload_max_filesize 6M
+  php_value post_max_size 20M
+</IfModule>
+<FilesMatch "^(config\.php|lib\.php|jalali\.php)$">
+  Require all denied
+</FilesMatch>
